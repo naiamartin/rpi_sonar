@@ -13,7 +13,7 @@ tk.Canvas.create_circle = _create_circle
 
 canvas.create_circle(250, 250,  250, fill="#383838", outline="#0E3618", width=1)
 
-angle = 45
+angle = 0
 forward = True
 
 def danger_line(spot):
@@ -37,13 +37,13 @@ def moving_line():
 
     canvas.create_line(250, 250, x, y, fill="#4CFF4C", width=2, tags="line")
 
-    if angle+2 <= 135 and forward == True:
+    if angle+2 <= 180 and forward == True:
         angle = (angle + 2) % 360
     else:
         forward = False
         if(forward == False):
             angle = (angle -2) % 360
-            if(angle+2 <= 45):
+            if(angle+2<=2):
                 forward = True
     update_points(angle)
     canvas.after(40, moving_line) 
@@ -64,7 +64,7 @@ def update_points(angle):
     }
     canvas.delete("spot")
     for target_angle, dist in detected.items():
-        if abs(target_angle - angle) < 2:
+        if target_angle - angle < 2:
             draw_danger_point(target_angle, dist)
 
 moving_line()
