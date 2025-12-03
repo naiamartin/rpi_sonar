@@ -2,13 +2,15 @@ import tkinter as tk
 import math
 import threading
 import random
+import time
+import requests
 
 root = tk.Tk()
 canvas = tk.Canvas(root, width=500, height=500, borderwidth=0, highlightthickness=0,
                    bg="black")
 canvas.grid()
 
-def _create_circle(self, x, y, r, **kwargs):
+def _create_circle(self, x, y, r, **kwargs):  
     return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
 tk.Canvas.create_circle = _create_circle
 
@@ -64,4 +66,25 @@ t1 = threading.Thread(target=moving_line, daemon=True)
 t1.start()
 
 root.title("Sonar Display")
+
+API_URL = "http://127.0.0.1:8000/points"
+def update_points(angle): 
+    canvas.delete("spot")
+    try:
+        response = requests.get(API_URL)
+        response.raise_for_status()
+        detected_points = response.json()
+        print("Puntos recibidos:", detected_points)
+        for point in detected_points:
+            target_angle = point["angle"]
+            dist = point["distance"]
+            if target_angle - angle < 2:
+                draw_danger_point(target_angle, dist)
+    except requests.exceptions.RequestException as e:
+        #print("Error API: ", e)
+        pass
+
+moving_line()
+
+root.title("Sonar Display 2")
 root.mainloop()
