@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style/style.css" />
+    <title>Sonar</title>
+  </head>
+  <body>
+    <h1>LUZ ROJA LUZ VERDE</h1>
+    <div id="luces">
+      <div id="luz-roja"></div>
+      <div id="luz-verde"></div>
+    </div>
+    <div id="juego">
+      <div id="punto-vivo-niña">
+        <div id="punto"></div>
+        <div id="niña"></div>
+      </div>
+    </div>
+    <div id="game_over_pantalla" class="hidden">
+      <h2>GAME OVER</h2>
+      <button id="boton_jugar">Jugar</button>
+    </div>
+  </body>
+</html>
+
+<!-- JavaScript para actualizar el punto en tiempo real -->
+<script>
+  let updateInterval = null;
+  async function updateUI(){
+    try{
+      const response = await fetch("http://localhost:8000/sensor/current");
+      if(!response.ok) return;
+
+      const data = await response.json();
+      const distancia = data.distance; //distancia en cm
+      const led = data.led_status; //GREEN o RED
+      const estado = data.game_status; // jugando, game_over, interrumpido
+
+      const punto = document.getElementById("punto");
+      const luzRoja = document.getElementById("luz-roja");
+      const luzVerde = document.getElementById("luz-verde");
+
+      // Actualiza las luces del html
+      if(led === "GREEN"){
+        luzVerde.style.backgroundColor = "rgb(0,200,0)";
+        luzRoja.style.backgroundColor= "rgb(80,0,0)";
+      }else if(led === "RED"){
+        luzVerde.style.backgroundColor = "rgb(80,0,0)";
+        luzRoja.style.backgroundColor= "rgb(255,0,0)";
+      }
+
+      // Actualizar el punto(distancia)
+      // 0cm=muy cerca; 100cm=muy lejos
+      const maxDist = 150;
+      const minDist = 5;
+      const range = Math.min(Math.max(distancia,minDist), maxDist);
+
+      //De distancia a px
+      const porcentaje = 1 - (range / maxDist); //si esta cerca porcentaje alto
+      const maxPx = 1300;
+      const posX = porcentaje * maxPx;
+
+      punto.style.transform = `transformX(${posX}px)`;
+
+      if(estado === "game_over"){
+        document.getElementById("game_over_pantalla").classList.remove("hidden");
+
+        clearInterval(updateInterval);
+      }
+
+    }catch(err){
+      console.error("Error obteniendo datos: ", err);
+
+    }
+  }
+  updateInterval = setInterval(updateUI, 100);
+
+  document.getElementById("boton_jugar").addEventListener("click", async () => {
+    await fetch("http://localhost:8000/game/reset", {
+        method: "POST"
+    });
+    document.getElementById("game_over_pantalla").classList.add("hidden");
+    punto.style.transform = "translateX(0px)";
+    if (!updateInterval) {
+      updateInterval = setInterval(updateUI, 100);
+    }
+  });
+</script>
