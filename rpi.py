@@ -65,8 +65,6 @@ def draw_danger_point(point, distance):
 t1 = threading.Thread(target=moving_line, daemon=True)
 t1.start()
 
-root.title("Sonar Display")
-
 API_URL = "http://127.0.0.1:8000/points"
 def update_points(angle): 
     canvas.delete("spot")
