@@ -1,15 +1,22 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body, Request
 from pydantic import BaseModel
 from typing import List, Optional
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+import os
+from pathlib import Path
 
-class SensorData(BaseModel):
-    distance: float
-    led_status: str  # "GREEN", "RED"
-    game_status: str  # "jugando", "game_over", "interrumpido"
-    timestamp: float
+PACIFICO, FACIL, NORMAL, DIFICIL, ALMONDIGA = 0, 1, 2, 3, 4
+dificultad = NORMAL
 
 app = FastAPI()
+current_sensor_data = 0.0
+current_led_data = {
+    "led_r":True,
+    "led_v":False
+}
 
 # CORS permite peticiones desde HTML
 app.add_middleware(
@@ -18,17 +25,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+path = os.getcwd()+"/static"
+app.mount("/static", StaticFiles(directory=path), name="static")
 
-current_sensor_data: Optional[SensorData] = None
-sensor_history: List[SensorData] = []
-MAX_HISTORY = 100
+templates = Jinja2Templates(directory="static/templates")
 
-@app.get("/")
-async def root():
-    return {
-        "message": "Red Light Green Light API funcionando",
-        "current_status": current_sensor_data.game_status if current_sensor_data else "no_data"
-    }
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
 
 @app.get("/sensor/current")
 async def get_current_sensor():
@@ -39,24 +44,29 @@ async def get_current_sensor():
 
 
 @app.post("/sensor/update")
-async def update_sensor(data: SensorData):
+async def update_sensor(distance:float = Body(...)):
     #actualiza datos del sensor
     global current_sensor_data
     
-    current_sensor_data = data
-    sensor_history.append(data)
+    current_sensor_data = distance
+    return distance
+
+@app.get("/led/current")
+async def get_current_leds():
+    #estado actual
+    if current_sensor_data is None:
+        raise HTTPException(status_code=404, detail="No hay datos del led disponibles")
+    return current_led_data
+
+@app.post("/led/update")
+async def update_led(data:dict):
+    #actualiza datos del sensor
+    global current_led_data
     
-    if len(sensor_history) > MAX_HISTORY:
-        sensor_history.pop(0)
-    
-    return {"status": "ok", "data": data}
+    current_led_data["led_r"] = data["led_r"]
+    current_led_data["led_v"] = data["led_v"]
+    return current_led_data
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-@app.post("/game/reset")
-async def game_reset():
-    global current_sensor_data
-    current_sensor_data = None
-    return {"status": "reset"}
