@@ -1,52 +1,63 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Arial', sans-serif;
+    font-family: Arial, sans-serif;
+    background-color: #1a1a2e;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #fddb92, #d1fdff);
-    color: #333;
+    min-height: 100vh;
+}
+
+.victory-container {
     text-align: center;
-  }
-
-  .container {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 40px 60px;
+    background-color: #2d3047;
+    padding: 3rem;
     border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    animation: fadeIn 1s ease-in-out;
-  }
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    color: white;
+    max-width: 500px;
+    width: 90%;
+}
 
-  h1 {
+h1 {
     font-size: 3rem;
-    color: #28a745;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-  }
+    margin-bottom: 1rem;
+}
 
-  p {
-    font-size: 1.5rem;
-    margin-bottom: 30px;
-  }
+p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: #ccc;
+}
 
-  button {
-    background-color: #28a745;
+button {
     color: white;
     border: none;
-    padding: 15px 30px;
+    padding: 1rem 2rem;
     font-size: 1.2rem;
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s;
-  }
+}
 
-  button:hover {
-    background-color: #218838;
-  }
+.victory-container button {
+    background-color: #4CAF50;
+}
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
-  }
+.victory-container button:hover {
+    background-color: #45a049;
+}
+
+/* Para la página de derrota */
+body:has(.victory-container h1:contains("PILLADO")) h1 {
+    color: #ff5252;
+}
+
+body:has(.victory-container h1:contains("PILLADO")) button {
+    background-color: #ff5252;
+}
+
+body:has(.victory-container h1:contains("PILLADO")) button:hover {
+    background-color: #ff3838;
+}
