@@ -6,6 +6,10 @@ const luzRoja = document.getElementById("luz-roja");
 const luzVerde = document.getElementById("luz-verde");
 const punto = document.getElementById("punto");
 
+const res = await fetch(`${API_URL}/status/leer`);
+const data = await res.json();
+var temp = data.estado
+
 // Función para actualizar LEDs
 async function actualizarLeds() {
 try {
@@ -29,9 +33,7 @@ async function actualizarDistancia() {
 try {
     const res = await fetch(`${API_URL}/sensor/current`);
     const data = await res.json();
-
-    //const data = {'distance':97};
-
+    
     // Mover el "punto" según la distancia
     const maxDist = 150; // distancia máxima
     const minDist = 5;
@@ -50,6 +52,7 @@ try {
 setInterval(() => {
 actualizarLeds();
 actualizarDistancia();
+//actualizarEstado();
 }, 100);
 
 async function cambiarModo() {
@@ -75,3 +78,25 @@ async function cambiarModo() {
     }
 
 }
+
+/*
+async function actualizarEstado() {
+    try {
+    const res = await fetch(`${API_URL}/status/leer`);
+    const data = await res.json();
+
+    if(data.estado - temp != 0){
+        if(data.estado == 0){
+            window.location.href = "/"
+        }else if (data.estado == 1){
+            window.location.href = "/static/templates/derrota"
+        }else if(data.estado == 2){
+            window.location.href = "/static/templates/victoria"
+        }
+    }
+    
+
+} catch (err) {
+    console.error("Error al leer Status:", err);
+}
+}*/

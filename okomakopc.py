@@ -12,9 +12,10 @@ API_URL = "http://localhost:8000"
 
 #“Daemon thread” que envía un evento anta cada pulsación
 def manejador():
-    global dificultad
     while True:
         requests.post(f"{API_URL}/sensor/update", json=sensor.distance*100)
+        if sensor.distance <= 5:
+            requests.post(f"{API_URL}/status/actual",json={"estado":2})
 
         data = requests.get(f"{API_URL}/game/jugando").content.decode('utf-8')
 
@@ -29,7 +30,6 @@ def manejador():
 
 def led_worker():
     global estado
-    global t_leer
     while True:
         if estado == CORRER:
             led_v.on()
@@ -46,10 +46,7 @@ def led_worker():
             buzz.on()
             time.sleep(0.2)
             buzz.off()
-            for _ in range(5):
-                led_r.toggle()
-                led_v.toggle()
-                time.sleep(0.2)
+            requests.post(f"{API_URL}/status/actual", json={"estado":1})
             break
         
         
@@ -58,6 +55,8 @@ t_manejador = threading.Thread(target=manejador,daemon=True)
 t_led = threading.Thread(target=led_worker, daemon=True)
 t_manejador.start()
 t_led.start()
+
+requests.post(f"{API_URL}/game/playing", json={"jugando":True})
 while estado != FIN:
     evento = eventos.get()
     if evento == "CORRER" :

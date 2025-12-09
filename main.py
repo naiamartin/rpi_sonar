@@ -8,13 +8,12 @@ from fastapi.templating import Jinja2Templates
 import os
 from pathlib import Path
 
-PACIFICO, FACIL, NORMAL, DIFICIL, ALMONDIGA = 0, 1, 2, 3, 4
-dificultad = NORMAL
 
 app = FastAPI()
 
 current_sensor_data = {"distance":0.0}
 juego = {"jugando":True}
+estado = {"estado":0}
 
 # CORS permite peticiones desde HTML
 app.add_middleware(
@@ -31,6 +30,14 @@ templates = Jinja2Templates(directory="static/templates")
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/derrota", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("derrota.html", {"request": request})
+
+@app.get("/victoria", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("victoria.html", {"request": request})
 
 
 @app.get("/sensor/current")
@@ -56,6 +63,15 @@ async def setgame(jugando:dict):
 @app.get("/game/jugando")
 async def leerjuego():
     return juego
+
+@app.post("status/actual")
+async def actualizar(status:dict):
+    global estado
+    estado = status
+
+@app.get("/status/leer")
+async def leerstatus():
+    return estado
 
 if __name__ == "__main__":
     import uvicorn
