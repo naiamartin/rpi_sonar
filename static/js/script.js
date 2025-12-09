@@ -9,8 +9,10 @@ const punto = document.getElementById("punto");
 // Función para actualizar LEDs
 async function actualizarLeds() {
 try {
-    const res = await fetch(`${API_URL}/led/current`);
-    const data = await res.json();
+    //const res = await fetch(`${API_URL}/led/current`);
+    //const data = await res.json();
+
+    const data = {"led_v": true, "led_r": false}
 
     // Cambiar color según estado
     luzVerde.style.backgroundColor = data.led_v ? "rgb(0,200,0)" : "rgb(50,50,50)";
@@ -29,7 +31,7 @@ try {
     // Mover el "punto" según la distancia
     const maxDist = 150; // distancia máxima
     const minDist = 5;
-    const dist = Math.min(Math.max(data.distance, minDist), maxDist);
+    const dist = 150;//Math.min(Math.max(data.distance, minDist), maxDist);
     const porcentaje = 1 - (dist / maxDist);
     const maxPx = 500; // ancho máximo en px
     const posX = porcentaje * maxPx;
