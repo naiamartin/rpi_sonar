@@ -1,6 +1,5 @@
 from gpiozero import DistanceSensor, LED, Buzzer
 import threading, queue, time, requests, json
-import random
 led_r = LED(26)
 led_v = LED(5)
 sensor = DistanceSensor(echo=23, trigger=22)
@@ -8,9 +7,6 @@ buzz = Buzzer(17)
 eventos = queue.Queue()
 CORRER, PARAR, FIN = 0, 1, 2
 estado = CORRER # estado inicia
-PACIFICO, FACIL, NORMAL, DIFICIL, ALMONDIGA = 0, 1, 2, 3, 4
-dificultad = NORMAL
-ran = 0
 
 API_URL = "http://localhost:8000" 
 
@@ -62,7 +58,7 @@ t_manejador = threading.Thread(target=manejador,daemon=True)
 t_led = threading.Thread(target=led_worker, daemon=True)
 t_manejador.start()
 t_led.start()
-while True:
+while estado != FIN:
     evento = eventos.get()
     if evento == "CORRER" :
         estado = CORRER
@@ -71,5 +67,3 @@ while True:
     elif evento == "FIN":
         estado = FIN
     print(estado)
-
-print("FIn")
