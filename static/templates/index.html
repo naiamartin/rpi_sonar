@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/static/style/style.css" />
+    <link rel="stylesheet" href="../style/style.css" />
     <title>Sonar</title>
   </head>
   <body>
     <h1>LUZ ROJA LUZ VERDE</h1>
     <div id="luces">
       <div id="luz-roja"></div>
+      <button id="boton-cambiar-led"onclick="cambiarModo()">Cambiar</button>
       <div id="luz-verde"></div>
-      <button onclick="cambiarModo()">Jugar!</button>
     </div>
     <div id="juego">
       <div id="punto-vivo-niña">
@@ -19,6 +19,10 @@
         <div id="punto"></div>
       </div>
     </div>
+    <div id="botones">
+        <button onclick="comenzarJuego()">Comenzar Juego</button>
+        <button onclick="detenerJuego()">Detener Juego</button>
+      </div>
 
   </body>
 </html>
