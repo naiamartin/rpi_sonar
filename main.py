@@ -12,7 +12,7 @@ PACIFICO, FACIL, NORMAL, DIFICIL, ALMONDIGA = 0, 1, 2, 3, 4
 dificultad = NORMAL
 
 app = FastAPI()
-current_sensor_data = 0.0
+current_sensor_data = {"distance":0.0}
 current_led_data = {
     "led_r":True,
     "led_v":False
@@ -44,7 +44,7 @@ async def get_current_sensor():
 
 
 @app.post("/sensor/update")
-async def update_sensor(distance:float = Body(...)):
+async def update_sensor(distance:dict):
     #actualiza datos del sensor
     global current_sensor_data
     

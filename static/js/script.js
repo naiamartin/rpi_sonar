@@ -28,15 +28,17 @@ try {
     const res = await fetch(`${API_URL}/sensor/current`);
     const data = await res.json();
 
+    //const data = {'distance':97};
+
     // Mover el "punto" según la distancia
     const maxDist = 150; // distancia máxima
     const minDist = 5;
-    const dist = 150;//Math.min(Math.max(data.distance, minDist), maxDist);
+    const dist = Math.min(Math.max(data.distance, minDist), maxDist);
     const porcentaje = 1 - (dist / maxDist);
     const maxPx = 500; // ancho máximo en px
     const posX = porcentaje * maxPx;
-
-    punto.style.transform = translateX(`${posX}px`);
+    
+    punto.style.transform = `translateX(${data.distance}px)`;
 } catch (err) {
     console.error("Error al leer distancia:", err);
 }
