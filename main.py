@@ -14,7 +14,7 @@ dificultad = NORMAL
 app = FastAPI()
 
 current_sensor_data = {"distance":0.0}
-juego = {"jugando":False}
+juego = {"jugando":True}
 
 # CORS permite peticiones desde HTML
 app.add_middleware(

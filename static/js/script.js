@@ -37,7 +37,7 @@ try {
     const minDist = 5;
     const dist = Math.min(Math.max(data.distance, minDist), maxDist);
     const porcentaje = 1 - (dist / maxDist);
-    const maxPx = 1100; // ancho máximo en px
+    const maxPx = 1400; // ancho máximo en px
     const posX = porcentaje * maxPx;
     
     punto.style.transform = `translateX(${posX}px)`;
