@@ -12,11 +12,9 @@ PACIFICO, FACIL, NORMAL, DIFICIL, ALMONDIGA = 0, 1, 2, 3, 4
 dificultad = NORMAL
 
 app = FastAPI()
+
 current_sensor_data = {"distance":0.0}
-current_led_data = {
-    "led_r":True,
-    "led_v":False
-}
+juego = {"jugando":False}
 
 # CORS permite peticiones desde HTML
 app.add_middleware(
@@ -42,30 +40,22 @@ async def get_current_sensor():
         raise HTTPException(status_code=404, detail="No hay datos del sensor disponibles")
     return current_sensor_data
 
-
 @app.post("/sensor/update")
-async def update_sensor(distance:dict):
+async def update_sensor(distance:float = Body(...)):
     #actualiza datos del sensor
     global current_sensor_data
     
-    current_sensor_data = distance
+    current_sensor_data["distance"] = distance
     return distance
 
-@app.get("/led/current")
-async def get_current_leds():
-    #estado actual
-    if current_sensor_data is None:
-        raise HTTPException(status_code=404, detail="No hay datos del led disponibles")
-    return current_led_data
+@app.post("/game/playing")
+async def setgame(jugando:dict):
+    global juego
+    juego = jugando
 
-@app.post("/led/update")
-async def update_led(data:dict):
-    #actualiza datos del sensor
-    global current_led_data
-    
-    current_led_data["led_r"] = data["led_r"]
-    current_led_data["led_v"] = data["led_v"]
-    return current_led_data
+@app.get("/game/jugando")
+async def leerjuego():
+    return juego
 
 if __name__ == "__main__":
     import uvicorn

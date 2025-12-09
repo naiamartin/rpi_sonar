@@ -9,14 +9,16 @@ const punto = document.getElementById("punto");
 // Función para actualizar LEDs
 async function actualizarLeds() {
 try {
-    //const res = await fetch(`${API_URL}/led/current`);
-    //const data = await res.json();
+    const res = await fetch(`${API_URL}/game/jugando`);
+    const data = await res.json();
+    if(data.jugando){
+        luzVerde.style.backgroundColor = "rgb(0,200,0)";
+        luzRoja.style.backgroundColor = "rgb(50,50,50)";
+    }else{
+        luzVerde.style.backgroundColor = "rgb(50,50,50)";
+        luzRoja.style.backgroundColor = "rgb(255, 0, 0)";
+    }
 
-    const data = {"led_v": true, "led_r": false}
-
-    // Cambiar color según estado
-    luzVerde.style.backgroundColor = data.led_v ? "rgb(0,200,0)" : "rgb(50,50,50)";
-    luzRoja.style.backgroundColor  = data.led_r ? "rgb(255,0,0)" : "rgb(50,50,50)";
 } catch (err) {
     console.error("Error al leer LEDs:", err);
 }
@@ -35,10 +37,10 @@ try {
     const minDist = 5;
     const dist = Math.min(Math.max(data.distance, minDist), maxDist);
     const porcentaje = 1 - (dist / maxDist);
-    const maxPx = 500; // ancho máximo en px
+    const maxPx = 1100; // ancho máximo en px
     const posX = porcentaje * maxPx;
     
-    punto.style.transform = `translateX(${data.distance}px)`;
+    punto.style.transform = `translateX(${posX}px)`;
 } catch (err) {
     console.error("Error al leer distancia:", err);
 }
@@ -50,42 +52,26 @@ actualizarLeds();
 actualizarDistancia();
 }, 100);
 
-async function encenderVerde() {
-    await fetch(`${API_URL}/led/update`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ led_v: true, led_r: false })
-    });
+async function cambiarModo() {
+    try {
+    const res = await fetch(`${API_URL}/game/jugando`);
+    const data = await res.json();
+    
+    if(data.jugando){
+        await fetch(`${API_URL}/game/playing`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({jugando: false})
+        });
+    }else{
+        await fetch(`${API_URL}/game/playing`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({jugando: true})
+        });
+    }
+    } catch (err) {
+        console.error("Error al leer estado de juego:", err);
+    }
 
-    luzVerde.style.backgroundColor = "rgb(0,255,0)";
-    luzRoja.style.backgroundColor = "rgb(50,50,50)";
-}
-async function apagarVerde() {
-    await fetch(`${API_URL}/led/update`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ led_v: false, led_r: false })
-    });
-    luzVerde.style.backgroundColor = "rgb(50,50,50)";
-}
-
-async function encenderRoja() {
-    await fetch(`${API_URL}/led/update`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ led_v: false, led_r: true })
-    });
-
-    luzRoja.style.backgroundColor = "rgb(255,0,0)";
-    luzVerde.style.backgroundColor = "rgb(50,50,50)";
-}
-
-async function apagarRoja() {
-    await fetch(`${API_URL}/led/update`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ led_v: false, led_r: false })
-    });
-
-    luzRoja.style.backgroundColor = "rgb(50,50,50)";
 }

@@ -19,14 +19,12 @@ def manejador():
     global dificultad
     global ran
 
-    leds = requests.get(f"{API_URL}/led/current").content.decode('utf-8')
+    data = requests.get(f"{API_URL}/game/jugando").content.decode('utf-8')
 
-    leds = json.loads(leds)
+    data = json.loads(data)
 
-    led_v = leds["led_v"]
-    led_r = leds["led_r"]
-    print(led_v)
-    print(led_r)
+    jugando = data["jugando"]
+    print(jugando)
 
     if led_r:
         eventos.put("PARAR")
